@@ -1,0 +1,24 @@
+# Labracadabra implementation status
+
+The existing Next.js repository and Git history were retained. The audit found an uncommitted App Router foundation with Tailwind 4 installed but no PostCSS plugin configuration. That prevented the app's utility layouts from rendering as intended. The original routes also used hard-coded inventory, slots, bookings, statistics, and simulated mutations.
+
+| Phase | Changes | Verification and remaining work |
+| --- | --- | --- |
+| 0 · Audit and UI repair | `postcss.config.mjs`, global CSS and existing layouts restore Tailwind, fix responsive navigation, and improve dialog keyboard behavior. | Production CSS contains grid and flex utilities. Viewed desktop and mobile captures. Chromium checked viewport width and Escape/focus restoration. |
+| 1 · Architecture | Existing App Router pages share typed application records, route handlers, UI primitives and data adapters. | TypeScript and production builds pass. |
+| 2 · Database and authentication | `supabase/migrations` adds normalized tables, row security, scoped RPCs and transactional bookings. `src/lib/campus/supabase.ts` handles sessions. Demo state persists locally and is development-only. | Applied migrations, fixture profiles and seed in an in-memory PostgreSQL test. Hosted Auth exchange and session renewal await institutional credentials. |
+| 3 · Discovery | `/equipment` searches 15 resources in four departments by catalog metadata. Includes access filters, dynamic slots, specifications, and compatible substitutes. | Chromium found both Raspberry Pi kits. Test suite covers search, rule-based availability and filters. |
+| 4 · Project workspace | `/projects` creates and edits projects, sets deadlines and capabilities, manages members, and displays requests and resources. | Browser created a project through the dialog. SQL test checked persistence, editing and private access. |
+| 5 · Intelligent booking | Equipment detail offers live slot selection and project-based requests. `/bookings` tracks history, cancellation and waitlists. | Tests cover training, maintenance, hours, cancellation, retry and persistence. Concurrent approval calls yielded one confirmation and one conflict. |
+| 6 · FairShare | `src/lib/campus/scheduling.ts` and `/conflicts` calculate eligibility, priority, provisional allocations, timelines, and cross-department alternatives. | Tests cover overlaps, deadlines, tie-breaking, ineligible alternatives and no feasible slot. SQL test verifies a cross-department handoff and the GiST overlap constraint. |
+| 7 · Copilot | Wish-to-Workspace, faculty summaries, and score explanations use server-side Gemini with structured validation and labeled catalog/record/FairShare fallbacks. | Browser checked catalog-backed plans. Adapter tests simulate valid output and errors. Live Gemini awaits an API key. |
+| 8 · Faculty center | `/faculty` reviews requests, records scoped decisions and offers compatible alternatives. Status, notes and notifications persist. | Demo and SQL tests reject student and out-of-department decisions and verify confirmed allocations. |
+| 9 · Analytics | `/analytics` aggregates scoped records for utilization, booking volume, cross-department demand, trends and recovery outcomes, with date filters. | Tests verify maintenance exclusion, and administrator-visible data contains live mutations. |
+| 10 · Extras | SmartSwap, staged resource plans, waitlists, notifications, training badges, scoped admin maintenance, staff-recorded QR visits, weekday heatmap and a historical demand baseline. | Chromium displayed a booking QR. Database test verified scope, time windows, check-in, check-out and replay protection. Camera scanning on physical hardware remains unverified. |
+| 11 · Demo | Seeded personas, contested GPU requests, historical data and an end-to-end walkthrough in README. | Local demo API and Chromium workflow tests passed. |
+| 12 · Testing and polish | Unit, HTTP, browser and database checks under `tests/`. | Lint, type checking, 13 unit tests, the production build, and the isolated PostgreSQL workflow passed. HTTP smoke tests loaded 13 routes. Chromium passed desktop/mobile checks and logged no console errors. |
+| 13 · Deployment readiness | `.env.example`, migrations, seed, setup and Vercel checklist in README. | A loopback production run returned 503 without Supabase configuration and rejected demo persona switching with 403. Hosted verification requires Supabase and Gemini credentials. |
+
+Design choices include scheduled campus hours in IST, form-local drafts, and one transaction that records faculty approval and confirms an allocation. Gemini selects capabilities and explanation focus from allowed values. Inventory IDs, booking state and eligibility come from application records.
+
+The working tree already included uncommitted foundation files before this work. Local demo data, build outputs, and environment files with credentials are ignored.

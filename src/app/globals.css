@@ -1,0 +1,118 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --background: #080c15;
+    --foreground: #f1f5f9;
+    --card: #0f1626;
+    --card-foreground: #f8fafc;
+    --card-border: #1e293b;
+    --card-hover: #162035;
+    --primary: #8b5cf6;
+    --primary-foreground: #ffffff;
+    --secondary: #131b2e;
+    --secondary-foreground: #cbd5e1;
+    --accent-cyan: #06b6d4;
+    --accent-violet: #8b5cf6;
+    --muted: #64748b;
+    --muted-foreground: #94a3b8;
+    --border: #1e293b;
+    --ring: #8b5cf6;
+  }
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  color-scheme: dark;
+  min-height: 100vh;
+}
+
+/* Custom dark scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #080c15;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1e293b;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #334155;
+}
+
+/* Subtle glow effects & utilities */
+.glow-violet {
+  box-shadow: 0 0 25px -5px rgba(139, 92, 246, 0.25);
+}
+
+.glow-cyan {
+  box-shadow: 0 0 25px -5px rgba(6, 182, 212, 0.25);
+}
+
+.glow-subtle {
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.5), 0 0 15px -3px rgba(139, 92, 246, 0.1);
+}
+
+.gradient-border {
+  position: relative;
+  border: 1px solid transparent;
+  background-clip: padding-box;
+}
+
+.gradient-border::before {
+  content: "";
+  position: absolute;
+  top: -1px;
+  right: -1px;
+  bottom: -1px;
+  left: -1px;
+  z-index: -1;
+  border-radius: inherit;
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.4), rgba(6, 182, 212, 0.2), transparent);
+}
+
+.hero-mesh {
+  background-image: 
+    radial-gradient(at 15% 15%, rgba(139, 92, 246, 0.18) 0px, transparent 50%),
+    radial-gradient(at 85% 10%, rgba(6, 182, 212, 0.12) 0px, transparent 50%),
+    radial-gradient(at 50% 90%, rgba(124, 58, 237, 0.1) 0px, transparent 60%);
+}
+
+.grid-pattern {
+  background-size: 32px 32px;
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+}
+
+:where(a, button, input, select, textarea):focus-visible {
+  outline: 2px solid #a78bfa;
+  outline-offset: 3px;
+}
+
+body:has(dialog[open]) {
+  overflow: hidden;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+@layer components {
+  .field {
+    @apply block min-w-0 w-full rounded-lg border border-slate-700 bg-[#0a101e] px-3 py-2.5 text-slate-100 placeholder:text-slate-400;
+  }
+  .eyebrow {
+    @apply text-xs font-semibold tracking-widest text-cyan-300 uppercase;
+  }
+}
