@@ -31,8 +31,8 @@ export function BookingPass({ id }: { id: string }) {
       {qr && <div className="grid justify-items-center gap-3">
         <svg viewBox={`0 0 ${qr.size} ${qr.size}`} role="img" aria-label="Booking check-in QR code"
           className="w-full max-w-56 rounded-lg bg-white" shapeRendering="crispEdges"><path d={modules} fill="#000" /></svg>
-        <p className="text-center text-sm text-slate-300">Staff can scan the QR or paste this pass code into the check-in screen.</p>
-        <code className="select-all break-all text-sm text-violet-200">{url.split("#").at(-1)}</code>
+        <p className="text-center text-sm text-quiet">Staff can scan the QR or paste this pass code into the check-in screen.</p>
+        <code className="select-all break-all text-sm text-accent-ink">{url.split("#").at(-1)}</code>
       </div>}
     </Modal>
   </>;

@@ -23,7 +23,7 @@ export function Tabs({
     <div
       role="tablist"
       className={cn(
-        "flex items-center gap-1 p-1 bg-[#090E1B] rounded-xl border border-slate-800/80 overflow-x-auto",
+        "flex items-center gap-1 p-1 bg-canvas rounded-xl border border-line overflow-x-auto",
         className
       )}
     >
@@ -32,14 +32,15 @@ export function Tabs({
         return (
           <button
             key={tab.id}
+            type="button"
             role="tab"
             aria-selected={isActive}
             onClick={() => onChange(tab.id)}
             className={cn(
               "flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all duration-150 whitespace-nowrap cursor-pointer",
               isActive
-                ? "bg-violet-600 text-white shadow-[0_0_15px_rgba(139,92,246,0.3)] font-semibold"
-                : "text-slate-400 hover:text-slate-200 hover:bg-slate-800/50"
+                ? "bg-accent-soft text-accent-ink font-semibold"
+                : "text-quiet hover:text-ink hover:bg-soft"
             )}
           >
             {tab.icon}
@@ -49,8 +50,8 @@ export function Tabs({
                 className={cn(
                   "px-1.5 py-0.2 rounded-full text-[10px] font-bold",
                   isActive
-                    ? "bg-white/20 text-white"
-                    : "bg-slate-800 text-slate-400"
+                    ? "bg-paper text-accent-ink"
+                    : "bg-soft text-quiet"
                 )}
               >
                 {tab.badge}

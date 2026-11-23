@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { ClipboardList } from "lucide-react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { useCampus } from "@/components/layout/CampusProvider";
 import { Badge } from "@/components/ui/Badge";
@@ -17,8 +18,9 @@ export default function FacultyPage() {
 function ReviewQueue() {
   const { workspace } = useCampus();
   const [history, setHistory] = useState(false);
+  const [selectedId, setSelectedId] = useState("");
   if (!workspace) return null;
-  if (workspace.actor.role === "student") return <Card className="p-5"><h1 className="text-xl font-semibold">Faculty access required</h1><p className="mt-2 text-sm text-slate-300">Request decisions require an authorized campus reviewer.</p></Card>;
+  if (workspace.actor.role === "student") return <Card className="p-5"><h1 className="text-xl font-semibold">Faculty access required</h1><p className="mt-2 text-sm text-quiet">Request decisions require an authorized campus reviewer.</p></Card>;
   const now = workspace.asOf;
   const scoped = workspace.requests.filter((request) => {
     const equipment = workspace.equipment.find((item) => item.id === request.equipmentId);
@@ -30,15 +32,37 @@ function ReviewQueue() {
   const visible = history ? scoped.filter((request) => !!request.decidedAt).sort((first, second) =>
     Date.parse(second.decidedAt ?? "") - Date.parse(first.decidedAt ?? "")) : pending;
 
+  const selected = visible.find((request) => request.id === selectedId) ?? visible[0];
+
   return <div className="space-y-5">
     <PageHeading title="Faculty approval center" description={`Review project-based requests in ${workspace.actor.role === "super_admin" ? "your campus-wide scope" : workspace.actor.department}.`}
       action={<Button href="/conflicts" variant="outline">Review FairShare</Button>} />
-    <div className="flex flex-wrap gap-2">
-      <Button aria-pressed={!history} variant={history ? "outline" : "primary"} onClick={() => setHistory(false)}>Pending ({pending.length})</Button>
-      <Button aria-pressed={history} variant={history ? "primary" : "outline"} onClick={() => setHistory(true)}>Decision history</Button>
+    <div className="grid items-start gap-4 lg:grid-cols-[minmax(215px,0.72fr)_minmax(0,1.65fr)]">
+      <Card>
+        <div className="space-y-2 border-b border-line p-3.5">
+          <h2 className="section-title flex items-center gap-2"><ClipboardList className="size-4 text-accent-ink" /> Request inbox</h2>
+          <div role="group" aria-label="Queue view" className="flex flex-wrap gap-1">
+            <Button size="sm" aria-pressed={!history} variant={history ? "ghost" : "secondary"} onClick={() => { setHistory(false); setSelectedId(""); }}>Pending ({pending.length})</Button>
+            <Button size="sm" aria-pressed={history} variant={history ? "secondary" : "ghost"} onClick={() => { setHistory(true); setSelectedId(""); }}>Decision history</Button>
+          </div>
+        </div>
+        <ul className="divide-y divide-line p-1">
+          {visible.map((item) => {
+            const title = workspace.projects.find((project) => project.id === item.projectId)?.title ?? "Project request";
+            return <li key={item.id}><button type="button" aria-pressed={selected?.id === item.id}
+              onClick={() => setSelectedId(item.id)} className="block w-full rounded-[9px] px-3 py-2.5 text-left hover:bg-soft aria-pressed:bg-accent-soft">
+              <span className="block text-sm font-semibold">{title}</span>
+              <span className="block text-xs text-quiet">{workspace.equipment.find((entry) => entry.id === item.equipmentId)?.name}</span>
+              <span className="mt-1 block text-xs text-quiet tabular-nums">{formatDay(item.start)}</span>
+            </button></li>;
+          })}
+        </ul>
+        {!selected && <p className="p-4 text-sm text-quiet">{history ? "No recorded decisions in your scope." : "No pending requests in your scope."}</p>}
+      </Card>
+      {visible.map((item) => <div key={`${workspace.actor.id}:${item.id}`} hidden={selected?.id !== item.id}>
+        <ReviewCard item={item} workspace={workspace} pending={pending} history={history} />
+      </div>)}
     </div>
-    {visible.map((item) => <ReviewCard key={`${workspace.actor.id}:${item.id}`} item={item} workspace={workspace} pending={pending} history={history} />)}
-    {!visible.length && <Card className="p-6 text-slate-300">{history ? "No recorded decisions in your scope." : "No pending requests in your scope."}</Card>}
   </div>;
 }
 
@@ -68,25 +92,26 @@ function ReviewCard({ item, workspace, pending, history }: { item: Reservation; 
   }
 
   return <Card className="space-y-4 p-5">
-    <div className="flex flex-wrap justify-between gap-2">
+    <div className="flex flex-wrap items-start justify-between gap-2">
       <div><h2 className="text-xl font-semibold">{project?.title ?? "Project request"}</h2>
-        <p className="text-sm text-slate-300">{resource?.name} · {formatSession(item.start, item.end)}</p></div>
+        <p className="mt-1 text-sm text-quiet tabular-nums">{resource?.name} · {formatSession(item.start, item.end)}</p>
+        {resource && <p className="mt-0.5 text-xs text-quiet">{resource.lab} · {resource.department}</p>}</div>
       <Status status={item.status} />
     </div>
     <div className="flex flex-wrap gap-2">
-      {project && <Badge variant="violet">Due {formatDay(project.deadline)}</Badge>}
+      {project && <Badge variant="accent">Due {formatDay(project.deadline)}</Badge>}
       <Badge variant={eligible ? "success" : "warning"}>{eligible ? "Training eligibility satisfied" : "Training required"}</Badge>
       {confirmedConflict && !history && <Badge variant="danger">Confirmed booking overlaps</Badge>}
       {competing > 0 && !history && <Badge variant="warning">{competing} competing {competing === 1 ? "request" : "requests"}</Badge>}
     </div>
-    <p className="text-sm text-slate-300">Requester · {item.requesterName ?? personas.find((person) => person.id === item.ownerId)?.name ?? item.ownerId}</p>
-    {project && <div className="space-y-2"><p className="text-sm text-slate-300">{project.description}</p>
+    <p className="text-sm text-quiet">Requester · {item.requesterName ?? personas.find((person) => person.id === item.ownerId)?.name ?? item.ownerId}</p>
+    {project && <div className="space-y-2"><p className="text-sm text-quiet">{project.description}</p>
       <div className="flex flex-wrap gap-2">{project.capabilities.map((capability) => <Badge key={capability}>{capability.replaceAll("-", " ")}</Badge>)}</div></div>}
-    <p className="rounded-lg bg-slate-950/50 p-3 text-sm"><span className="font-semibold">Booking purpose</span><br />{item.purpose}</p>
-    {history ? <p className="text-sm text-slate-300">Decision recorded {item.decidedAt && formatDay(item.decidedAt)}{item.comment ? ` · ${item.comment}` : ""}</p> : (
+    <p className="rounded-lg bg-soft p-3 text-sm"><span className="font-semibold">Booking purpose</span><br />{item.purpose}</p>
+    {history ? <p className="text-sm text-quiet">Decision recorded {item.decidedAt && formatDay(item.decidedAt)}{item.comment ? ` · ${item.comment}` : ""}</p> : (
       <div className="space-y-3">
         <Feedback error={error} />
-        {summary && <p role="status" className="rounded-lg border border-cyan-950 p-3 text-sm"><strong>{summary.source} summary</strong> · {summary.summary}</p>}
+        {summary && <p role="status" className="rounded-lg border border-cyan-tint p-3 text-sm"><strong>{summary.source} summary</strong> · {summary.summary}</p>}
         <Button variant="secondary" isLoading={busy === "summary"} disabled={!!busy} onClick={async () => {
           setBusy("summary"); setError("");
           try {

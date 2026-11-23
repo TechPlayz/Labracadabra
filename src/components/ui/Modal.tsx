@@ -34,21 +34,21 @@ export function Modal({ isOpen, onClose, title, description, children, footer, m
       aria-describedby={description ? `${id}-description` : undefined}
       onCancel={(event) => { event.preventDefault(); onClose(); }}
       onClick={(event) => { if (event.target === event.currentTarget) onClose(); }}
-      className={cn("m-auto max-h-[calc(100dvh-2rem)] w-[calc(100%-2rem)] rounded-2xl border border-slate-700 bg-[#0F1626] text-slate-100 shadow-2xl backdrop:bg-black/75", widths[maxWidth])}
+      className={cn("glass-panel dialog-surface m-auto max-h-[calc(100dvh-2rem)] w-[calc(100%-2rem)] rounded-[18px] text-ink shadow-xl backdrop:bg-ink/30", widths[maxWidth])}
     >
       {isOpen && (
         <div>
-          <header className="flex items-start justify-between gap-3 border-b border-slate-800 p-5">
+          <header className="flex items-start justify-between gap-3 border-b border-line p-5">
             <div>
-              <h2 id={id} className="text-lg font-semibold text-white">{title}</h2>
-              {description && <p id={`${id}-description`} className="mt-1 text-sm text-slate-400">{description}</p>}
+              <h2 id={id} className="text-lg font-semibold text-ink">{title}</h2>
+              {description && <p id={`${id}-description`} className="mt-1 text-sm text-quiet">{description}</p>}
             </div>
-            <button type="button" aria-label="Close dialog" onClick={onClose} className="shrink-0 rounded-lg p-1 text-slate-300 hover:bg-slate-800">
+            <button type="button" aria-label="Close dialog" onClick={onClose} className="icon-control">
               <X className="size-5" />
             </button>
           </header>
           <div className="p-5">{children}</div>
-          {footer && <footer className="flex flex-wrap items-center justify-end gap-2 border-t border-slate-800 p-4">{footer}</footer>}
+          {footer && <footer className="flex flex-wrap items-center justify-end gap-2 border-t border-line p-4">{footer}</footer>}
         </div>
       )}
     </dialog>

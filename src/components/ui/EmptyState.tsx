@@ -25,15 +25,15 @@ export function EmptyState({
   return (
     <div
       className={cn(
-        "flex flex-col items-center justify-center text-center p-8 sm:p-12 rounded-xl border border-dashed border-slate-800 bg-[#0A0F1D]/60 backdrop-blur-sm",
+        "flex flex-col items-center justify-center text-center p-8 sm:p-12 rounded-xl border border-dashed border-line bg-paper",
         className
       )}
     >
-      <div className="w-12 h-12 rounded-full bg-violet-950/60 border border-violet-800/40 flex items-center justify-center mb-4 text-violet-400">
+      <div className="w-12 h-12 rounded-[11px] bg-accent-soft border border-accent/25 flex items-center justify-center mb-4 text-accent-ink">
         <Icon className="w-6 h-6" />
       </div>
-      <h3 className="text-base font-semibold text-slate-100 mb-1.5">{title}</h3>
-      <p className="text-xs text-slate-400 max-w-sm mb-5 leading-relaxed">
+      <h3 className="text-base font-semibold text-ink mb-1.5">{title}</h3>
+      <p className="text-xs text-quiet max-w-sm mb-5 leading-relaxed">
         {description}
       </p>
       {(actionLabel && (onAction || actionHref)) && (

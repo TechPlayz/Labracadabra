@@ -39,20 +39,23 @@ function Administration() {
   return <div className="space-y-5">
     <PageHeading title="Lab administration" description="Manage physical unit status and schedule maintenance in your authorized department." />
     <Feedback {...feedback} />
-    <div className="grid gap-4 xl:grid-cols-2">
-      {resources.map((item) => <Card key={item.id} className="space-y-3 p-5">
-        <div><h2 className="text-lg font-semibold">{item.name}</h2><p className="text-sm text-slate-300">{item.department} · {item.lab}</p></div>
-        {workspace.units.filter((unit) => unit.equipmentId === item.id).map((unit) => <div key={unit.id} className="space-y-2 rounded-xl border border-slate-800 p-3">
-          <div className="flex flex-wrap items-center gap-2"><p className="text-sm font-medium">{unit.label}</p><Badge variant={unit.operational ? "success" : "warning"}>{unit.operational ? "Operational" : "Offline"}</Badge></div>
-          {workspace.maintenance.filter((item) => item.unitId === unit.id && Date.parse(item.end) > workspace.asOf).map((block) => <p key={block.start} className="text-sm text-amber-200">Maintenance · {formatSession(block.start, block.end)}</p>)}
+    {resources.length > 0 && <div className="panel divide-y divide-line">
+      <div className="px-4 py-3 text-sm font-semibold sm:px-5">Equipment and physical units</div>
+      {resources.map((item) => <section key={item.id} className="grid items-start gap-3 px-4 py-4 sm:px-5 xl:grid-cols-[minmax(0,0.85fr)_minmax(0,1.5fr)]">
+        <div><h2 className="section-title">{item.name}</h2><p className="text-sm text-quiet">{item.department} · {item.lab}</p></div>
+        <div className="space-y-2">
+        {workspace.units.filter((unit) => unit.equipmentId === item.id).map((unit) => <div key={unit.id} className="space-y-2 rounded-lg bg-soft/55 p-3">
+          <div className="flex flex-wrap items-center gap-2"><p className="text-sm font-medium">{unit.label}</p><Badge variant={unit.operational ? "success" : "warning"} dot>{unit.operational ? "Operational" : "Offline"}</Badge></div>
+          {workspace.maintenance.filter((item) => item.unitId === unit.id && Date.parse(item.end) > workspace.asOf).map((block) => <p key={block.start} className="text-sm text-warning-ink">Maintenance · {formatSession(block.start, block.end)}</p>)}
           <div className="flex flex-wrap gap-2">
             <Button disabled={busy} variant="outline" onClick={() => void change({ type: "setOperational", id: unit.id, operational: !unit.operational })}>{unit.operational ? "Take offline" : "Mark operational"}</Button>
             <Button disabled={busy} variant="secondary" onClick={() => { setSelected(unit.id); setFeedback({ error: "", message: "" }); }}>Schedule maintenance</Button>
           </div>
         </div>)}
-      </Card>)}
-    </div>
-    {!resources.length && <Card className="p-5 text-slate-300">No equipment is assigned to your scope.</Card>}
+        </div>
+      </section>)}
+    </div>}
+    {!resources.length && <Card className="p-5 text-quiet">No equipment is assigned to your scope.</Card>}
     <Modal title="Schedule maintenance" isOpen={!!unit} onClose={() => setSelected("")}>
       <form className="space-y-3" onSubmit={(event) => {
         event.preventDefault();

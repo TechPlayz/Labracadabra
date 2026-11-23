@@ -6,9 +6,15 @@ const accessCookie = "labracadabra-access";
 const refreshCookie = "labracadabra-refresh";
 
 export function mode() {
-  if (process.env.SUPABASE_URL && process.env.SUPABASE_PUBLISHABLE_KEY) return "institutional";
-  if (process.env.SUPABASE_URL || process.env.SUPABASE_PUBLISHABLE_KEY) return "unconfigured";
-  return process.env.NODE_ENV === "development" ? "demo" : "unconfigured";
+  const demo = process.env.DEMO_MODE || undefined;
+  const url = process.env.SUPABASE_URL;
+  const key = process.env.SUPABASE_PUBLISHABLE_KEY;
+
+  if (demo === "true") return url || key ? "unconfigured" : "demo";
+  if (demo !== undefined && demo !== "false") return "unconfigured";
+  if (url && key) return "institutional";
+  if (url || key) return "unconfigured";
+  return demo === undefined && process.env.NODE_ENV === "development" ? "demo" : "unconfigured";
 }
 
 interface Session { access_token: string; refresh_token: string; expires_in: number }

@@ -27,12 +27,12 @@ export function MobileNav({ isOpen, onClose }: { isOpen: boolean; onClose: () =>
       aria-label="Campus navigation"
       onClose={onClose}
       onClick={(event) => { if (event.target === event.currentTarget) event.currentTarget.close(); }}
-      className="fixed inset-y-0 left-0 m-0 h-dvh max-h-none w-72 max-w-[85vw] overflow-hidden bg-[#090D18] text-slate-100 backdrop:bg-black/70"
+      className="fixed top-2 bottom-2 left-2 m-0 h-auto max-h-none w-[255px] max-w-[calc(100%-1rem)] overflow-visible rounded-[19px] bg-transparent text-ink backdrop:bg-ink/30"
     >
-      <button type="button" aria-label="Close menu" onClick={onClose} className="absolute right-2 top-3 z-40 rounded-lg p-2 text-slate-300 hover:bg-slate-800">
+      <button type="button" aria-label="Close menu" onClick={onClose} className="icon-control absolute top-2 right-2 z-40">
         <X className="size-5" />
       </button>
-      <Sidebar className="h-dvh w-full" onNavigate={onClose} />
+      <Sidebar className="h-full w-full" onNavigate={onClose} />
     </dialog>
   );
 }

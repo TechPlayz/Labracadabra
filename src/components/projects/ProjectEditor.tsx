@@ -41,7 +41,7 @@ export function ProjectEditor({ project, open, onClose, onSave }: {
           <label className="min-w-0 text-sm">Project deadline<input name="deadline" type="date" min={project ? undefined : campusDate(workspace?.asOf ?? 0)} className="field mt-1" required defaultValue={project?.deadline} /></label>
           <label className="min-w-0 text-sm">Progress (%)<input name="progress" type="number" min={0} max={100} className="field mt-1" required defaultValue={project?.progress ?? 0} /></label>
         </div>
-        {capabilities.length > 0 && <fieldset className="grid max-h-36 gap-2 overflow-auto rounded-lg border border-slate-700 p-3 sm:grid-cols-2">
+        {capabilities.length > 0 && <fieldset className="grid max-h-36 gap-2 overflow-auto rounded-lg border border-line p-3 sm:grid-cols-2">
           <legend className="px-1 text-sm">Required capabilities</legend>
           {capabilities.map((capability) => <label key={capability} className="flex items-center gap-2 text-sm">
             <input type="checkbox" name="capability" value={capability} defaultChecked={project?.capabilities.includes(capability)} />{capability.replaceAll("-", " ")}
@@ -53,7 +53,7 @@ export function ProjectEditor({ project, open, onClose, onSave }: {
           </label>)}
         </fieldset> : <label className="block text-sm">Team member campus IDs
           <input name="members" className="field mt-1" defaultValue={project?.team.join(", ")} />
-          <span className="mt-1 block text-xs text-slate-400">Enter comma-separated membership IDs from your campus administrator.</span>
+          <span className="mt-1 block text-xs text-quiet">Enter comma-separated membership IDs from your campus administrator.</span>
         </label>}
         <div className="flex flex-wrap gap-2"><Button type="submit" isLoading={saving}>Save project</Button><Button type="button" onClick={onClose} variant="outline">Cancel</Button></div>
       </form>

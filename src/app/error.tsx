@@ -18,14 +18,14 @@ export default function ErrorBoundary({
 
   return (
     <div className="min-h-[70vh] flex flex-col items-center justify-center p-6 text-center">
-      <div className="w-14 h-14 rounded-2xl bg-rose-950/80 border border-rose-800/60 flex items-center justify-center mb-5 text-rose-400">
+      <div className="w-14 h-14 rounded-2xl bg-error-soft border border-error-ink/20 flex items-center justify-center mb-5 text-error-ink">
         <AlertTriangle className="w-7 h-7" />
       </div>
 
-      <h2 className="text-2xl font-bold text-white mb-2">
-        Unexpected Interface State
+      <h2 className="text-2xl font-semibold text-ink mb-2">
+        This view could not load
       </h2>
-      <p className="text-xs text-slate-400 max-w-md mb-6 leading-relaxed">
+      <p className="text-xs text-quiet max-w-md mb-6 leading-relaxed">
         An error occurred while loading this campus resource view. You can reload the view or return to the main dashboard.
       </p>
 

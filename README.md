@@ -22,6 +22,29 @@ $env:LABRACADABRA_DEMO_FILE = Join-Path $env:TEMP "labracadabra-$([guid]::NewGui
 npm run dev
 ```
 
+## Run the production demo without sign-in
+
+Use a separate Node.js deployment for the public demo. Set the following runtime variables in the hosting environment or in `.env.local` at the repository root. Next.js loads `.env.local` for both `npm run dev` and `npm run start`. The example file is a template.
+
+```dotenv
+DEMO_MODE=true
+SUPABASE_URL=
+SUPABASE_PUBLISHABLE_KEY=
+GEMINI_API_KEY=
+```
+
+```bash
+npm ci
+npm run build
+npm run start
+```
+
+Open the homepage directly. The workspace starts as a seeded Student. Use the **Demo persona** selector to switch to Faculty or Lab Admin. The catalog copilot uses its rule-based fallback with the configuration above.
+
+For hosted demos, run a single Node instance and set `LABRACADABRA_DEMO_FILE` to a JSON file on a writable persistent volume, for example `/var/lib/labracadabra-demo/workspace.json` on Linux. The directory must be writable by the Node process. The default file is `.labracadabra-demo/workspace.json` relative to the server's working directory. The existing JSON store is shared by visitors to that demo deployment. Hosts with ephemeral or per-instance filesystems cannot guarantee that changes survive restarts or follow users across instances.
+
+For institutional deployments, set `DEMO_MODE=false` and configure both Supabase variables. Combining `DEMO_MODE=true` with either Supabase setting leaves the workspace unavailable until the configuration is corrected.
+
 ### Walkthrough
 
 1. **Discover.** Use Alex Rivera. Search for “Raspberry Pi” to see kits in Electrical Engineering and Mechatronics. Open a kit and inspect its specifications, access rules, next slots, and compatible alternatives.
@@ -50,7 +73,7 @@ npm run dev
 | `src/lib/campus` | Typed data contracts, slot validation, FairShare, discovery, analytics, and storage adapters |
 | `supabase/migrations` | Normalized tables, RLS, restricted RPCs and database constraints |
 
-Browser requests use HttpOnly same-site cookies. The Supabase database derives roles from the authenticated user's profile. RLS is enabled on the tables, direct access by anonymous and authenticated REST roles is revoked, and authenticated clients can call the scoped snapshot and mutation RPCs. The application uses the campus publishable key. Partial configuration or missing Supabase settings in a production build leaves the workspace unavailable.
+Browser requests use HttpOnly same-site cookies. The Supabase database derives roles from the authenticated user's profile. RLS is enabled on the tables, direct access by anonymous and authenticated REST roles is revoked, and authenticated clients can call the scoped snapshot and mutation RPCs. The application uses the campus publishable key. Institutional mode requires both Supabase settings. Production demo mode requires the explicit server flag described above.
 
 Dates display in campus time (Asia/Kolkata). Booking timestamps are stored as UTC instants and compared as half-open intervals. Booking form drafts stay local. Open resources confirm in one transaction. Faculty-required requests begin pending and move to confirmed in a transaction that also records the approval. The same operation validates eligibility and checks the unit again. Confirmed sessions appear completed when their end time passes. A student can cancel a future eligible request. A waitlisted request can be retried when capacity becomes available. A faculty proposal invites the student to submit a new request for that unit and time.
 
@@ -66,7 +89,7 @@ Ties use the earlier submission time and then the immutable request ID. The sear
 
 ### Deployment checklist
 
-- Use the Next.js framework preset and a supported Node runtime. Set the Supabase variables and optional Gemini variables in the appropriate Vercel environment. Use independent databases and credentials for preview and production. [Next.js on Vercel](https://vercel.com/docs/frameworks/full-stack/nextjs)
+- For institutional hosting, use the Next.js framework preset and a supported Node runtime. Set the Supabase variables and optional Gemini variables in the appropriate Vercel environment. Use independent databases and credentials for preview and production. [Next.js on Vercel](https://vercel.com/docs/frameworks/full-stack/nextjs)
 - Apply migrations, provision a student, scoped faculty and admin, and verify project creation, session renewal, approval, cancellation, and role isolation over HTTPS.
 - Use the campus publishable key only. Keep Gemini credentials server-side. Confirm that application logs and test fixtures contain no institutional credentials or pass tokens.
 - Verify the maintenance guard, physical unit overlap constraint, and role-restricted QR check-in on the target infrastructure. Test the fallback with the Gemini key unset.
