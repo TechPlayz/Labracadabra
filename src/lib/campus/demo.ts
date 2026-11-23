@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { closeSync, mkdirSync, openSync, readFileSync, renameSync, unlinkSync, writeFileSync } from "node:fs";
-import { dirname, resolve } from "node:path";
+import { tmpdir } from "node:os";
+import { dirname, join, resolve } from "node:path";
 import { campusId, equipment, units } from "./catalog";
 import { CampusError, type Command } from "./commands";
 import { campusDate, campusTime, compatibleResources, overlap, slotProblem, weekday } from "./scheduling";
@@ -54,7 +55,11 @@ function seed(now: number): DemoState {
   };
 }
 
-const demoPath = () => resolve(process.env.LABRACADABRA_DEMO_FILE || ".labracadabra-demo/workspace.json");
+const demoPath = () => resolve(process.env.LABRACADABRA_DEMO_FILE || (
+  process.env.VERCEL === "1"
+    ? join(tmpdir(), "labracadabra-demo", "workspace.json")
+    : ".labracadabra-demo/workspace.json"
+));
 
 function transaction<T>(work: (state: DemoState, now: number) => T, save = false) {
   const file = demoPath();

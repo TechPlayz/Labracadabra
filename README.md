@@ -41,9 +41,9 @@ npm run start
 
 Open the homepage directly. The workspace starts as a seeded Student. Use the **Demo persona** selector to switch to Faculty or Lab Admin. The catalog copilot uses its rule-based fallback with the configuration above.
 
-For hosted demos, run a single Node instance and set `LABRACADABRA_DEMO_FILE` to a JSON file on a writable persistent volume, for example `/var/lib/labracadabra-demo/workspace.json` on Linux. The directory must be writable by the Node process. The default file is `.labracadabra-demo/workspace.json` relative to the server's working directory. The existing JSON store is shared by visitors to that demo deployment. Hosts with ephemeral or per-instance filesystems cannot guarantee that changes survive restarts or follow users across instances.
+For hosted demos, run a single Node instance and set `LABRACADABRA_DEMO_FILE` to a JSON file on a writable persistent volume, for example `/var/lib/labracadabra-demo/workspace.json` on Linux. The directory must be writable by the Node process. The default file is `.labracadabra-demo/workspace.json` relative to the server's working directory. The existing JSON store is shared by visitors to that demo deployment. On Vercel, the demo defaults to the writable temporary directory when system environment variables are exposed. Otherwise, set `LABRACADABRA_DEMO_FILE=/tmp/labracadabra-demo/workspace.json` explicitly. Demo writes on Vercel are temporary and can vary by function instance. Apply `DEMO_MODE=true` to the deployment environment you use and redeploy after changing it.
 
-For institutional deployments, set `DEMO_MODE=false` and configure both Supabase variables. Combining `DEMO_MODE=true` with either Supabase setting leaves the workspace unavailable until the configuration is corrected.
+For institutional deployments, set `DEMO_MODE=false` and configure both Supabase variables. With `DEMO_MODE=true`, requests use the isolated demo store even if Supabase variables are configured.
 
 ### Walkthrough
 

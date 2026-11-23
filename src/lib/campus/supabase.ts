@@ -6,11 +6,11 @@ const accessCookie = "labracadabra-access";
 const refreshCookie = "labracadabra-refresh";
 
 export function mode() {
-  const demo = process.env.DEMO_MODE || undefined;
+  const demo = process.env.DEMO_MODE?.trim() || undefined;
   const url = process.env.SUPABASE_URL;
   const key = process.env.SUPABASE_PUBLISHABLE_KEY;
 
-  if (demo === "true") return url || key ? "unconfigured" : "demo";
+  if (demo === "true") return "demo";
   if (demo !== undefined && demo !== "false") return "unconfigured";
   if (url && key) return "institutional";
   if (url || key) return "unconfigured";
